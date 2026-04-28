@@ -53,3 +53,46 @@ exports.addFunds = async (req, res) => {
     res.status(500).json({ message: "Transaction failed", error: error.message });
   }
 };
+
+exports.updateFund = async (req, res) => {
+    const { amount, source, beneficiary, description, date } = req.body;
+    try {
+        const oldLog = await TreasuryLog.findById(req.params.id);
+        
+        // Adjust balance: Subtract old amount, add new amount
+        await Treasury.findOneAndUpdate(
+            { source: oldLog.source },
+            { $inc: { amount: -Number(oldLog.amount) } }
+        );
+        await Treasury.findOneAndUpdate(
+            { source: source },
+            { $inc: { amount: Number(amount) }, $set: { lastUpdated: new Date() } },
+            { upsert: true }
+        );
+
+        const updated = await TreasuryLog.findByIdAndUpdate(req.params.id, {
+            amount, source, beneficiary, description, date: new Date(date)
+        }, { new: true });
+
+        res.status(200).json(updated);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.deleteFund = async (req, res) => {
+    try {
+        const log = await TreasuryLog.findById(req.params.id);
+        if (log) {
+            // Reverse the balance in Treasury
+            await Treasury.findOneAndUpdate(
+                { source: log.source },
+                { $inc: { amount: -Number(log.amount) } }
+            );
+            await TreasuryLog.findByIdAndDelete(req.params.id);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -93,3 +93,23 @@ exports.getSummary = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// DELETE Transaction
+exports.deleteTransaction = async (req, res) => {
+    try {
+        await Transaction.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: "Transaction deleted" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// UPDATE Transaction
+exports.updateTransaction = async (req, res) => {
+    try {
+        const updated = await Transaction.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updated);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
