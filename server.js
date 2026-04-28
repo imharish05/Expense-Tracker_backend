@@ -16,7 +16,7 @@ const { protect } = require('./middleware/protect.js');
 const app = express();
 
 
-const allowedOrigins = ['http://localhost:3000', 'https://imharish05.github.io','https://harishtracker.netlify.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://imharish05.github.io','https://treasuretracker.netlify.app'];
 
 const corsOptions = {
   origin: (origin, callback) => {
