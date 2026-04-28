@@ -1,42 +1,30 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.js'); // Adjust path to your db config
+const mongoose = require('mongoose');
 
-const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: { isEmail: true },
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  role: {
-    type: DataTypes.STRING,
-    defaultValue: 'staff',
-  },
-  status: {
-    type: DataTypes.STRING,
-    defaultValue: 'Active',
-  }
+const userSchema = new mongoose.Schema({
+    name: { 
+        type: String, 
+        required: [true, 'Please add a name'] 
+    },
+    phone: { 
+        type: String, 
+        required: [true, 'Please add a phone number'], 
+        unique: true 
+    },
+    email: { 
+        type: String, 
+        required: [true, 'Please add an email'], 
+        unique: true 
+    },
+    password: { 
+        type: String, 
+        required: [true, 'Please add a password'] 
+    },
+    role: { 
+        type: String, 
+        default: 'admin' 
+    }
 }, {
-  tableName: 'users',
-  timestamps: true,
+    timestamps: true
 });
 
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);
