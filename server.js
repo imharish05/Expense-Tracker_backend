@@ -15,7 +15,24 @@ const { protect } = require('./middleware/protect.js');
 
 const app = express();
 
-app.use(cors()); // Keep it simple for now as per your request
+
+const allowedOrigins = ['http://localhost:3000', 'https://imharish05.github.io','https://harishtracker.netlify.app'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

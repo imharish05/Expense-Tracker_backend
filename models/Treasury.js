@@ -18,7 +18,8 @@ const treasuryLogSchema = new mongoose.Schema({
   source: { type: String, required: true },
   beneficiary: { type: String, required: true },
   description: { type: String },
-  date: { type: Date, default: Date.now }
+  // This is correct, but the controller must pass a value to override the default
+  date: { type: Date, default: Date.now } 
 }, { timestamps: true });
 
 const Treasury = mongoose.model('Treasury', treasurySchema);

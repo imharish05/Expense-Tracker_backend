@@ -19,12 +19,15 @@ exports.getTreasuryStatus = async (req, res) => {
 };
 
 // POST: Add funds, update source balance, and create audit log
+// POST: Add funds, update source balance, and create audit log
 exports.addFunds = async (req, res) => {
-  const { amount, source, beneficiary, description } = req.body;
+  const { amount, source, beneficiary, description, date } = req.body;
+
+  console.log(date);
+  
 
   try {
-    // 1. Atomically increment the balance for the specific source
-    // upsert: true creates the document if it doesn't exist yet
+    // 1. Update or Create the source balance
     await Treasury.findOneAndUpdate(
       { source: source },
       { 
@@ -34,19 +37,19 @@ exports.addFunds = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // 2. Create the detailed audit log
+    // 2. Create the log entry
+    // Convert the string date from the frontend into a JS Date object
     const logEntry = new TreasuryLog({
       amount: Number(amount),
       source,
       beneficiary,
-      description
+      description,
+      date: date ? new Date(date) : new Date() 
     });
 
     await logEntry.save();
-
-    res.status(200).json({ success: true, message: "Funds injected and logged successfully" });
+    res.status(200).json({ success: true, message: "Funds injected successfully" });
   } catch (error) {
-    console.error("Treasury Error:", error);
     res.status(500).json({ message: "Transaction failed", error: error.message });
   }
 };
