@@ -54,16 +54,22 @@ exports.getTransactions = async (req, res) => {
 };
 
 // --- ADD TRANSACTION ---
+// --- ADD TRANSACTION ---
 exports.addTransaction = async (req, res) => {
-    const { item, amount, paid_by } = req.body;
+    // Destructure 'date' from body
+    const { item, amount, paid_by, date } = req.body; 
     try {
-        const newEntry = await Transaction.create({ item, amount, paid_by });
+        const newEntry = await Transaction.create({ 
+            item, 
+            amount, 
+            paid_by,
+            created_at: date ? new Date(date) : undefined 
+        });
         res.status(201).json(newEntry);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 };
-
 // --- GET SUMMARY ---
 exports.getSummary = async (req, res) => {
     try {
